@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+.form-control {
+  height: calc(1,5em + 0.75rem + 2px);
+}
+
+.tableFixHead {
+  overflow-y: auto;
+  height: 100px;
+}
+
+  .tableFixHead thead th {
+    position: sticky;
+    top: 0;
+    background-color: aliceblue;
+  }
