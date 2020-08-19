@@ -31,6 +31,7 @@ namespace ChromelyAngular
             container.RegisterSingleton(typeof(ChromelyController), Guid.NewGuid().ToString(), typeof(PersonsController));
             container.RegisterSingleton(typeof(ChromelyController), Guid.NewGuid().ToString(), typeof(AuthController));
             container.RegisterSingleton(typeof(ChromelyController), Guid.NewGuid().ToString(), typeof(DataController));
+            container.RegisterSingleton(typeof(ChromelyController), Guid.NewGuid().ToString(), typeof(RequestsController));
         }
     }
 }

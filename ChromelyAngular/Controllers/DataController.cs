@@ -34,12 +34,14 @@ namespace ChromelyAngular.Controllers
                     var Zones = (jsonClient.GetAreasAsync(1, 1000).Result).Select(x => x.Name).ToArray();
                     var Positions = (jsonClient.GetPositionsAsync(1, 1000).Result).Select(x => x.Name).ToArray();
                     var BlockReasons = (jsonClient.GetBlockReasonsAsync(1, 1000).Result).Select(x => x.Name).ToArray();
-                    
+                    var Events = (jsonClient.GetEventsAsync(1, 1000).Result).Select(x => new { x.Id, x.Name, x.Date }).ToArray();
+
                     DbDataSource = new
                     {
                         Zones,
                         Positions,
                         BlockReasons,
+                        Events,
                     };
                 }
                 return new ChromelyResponse()

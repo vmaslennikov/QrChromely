@@ -4,13 +4,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChromelyAngular.Backend.Models
 {
-    public abstract class BaseObject
+    public interface IAuditableObject
+    {
+        public DateTime? Created { get; set; }
+        public DateTime? Modified { get; set; }
+    }
+
+    public abstract class BaseObject : IAuditableObject
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public int ExternalId { get; set; }
         public bool Deleted { get; set; }
+        public DateTime? Created { get; set; }
+        public DateTime? Modified { get; set; }
     }
 
     [Table("Persons")]
@@ -31,7 +39,7 @@ namespace ChromelyAngular.Backend.Models
     }
 
     [Table("Documents")]
-    public class RfsDocument : BaseObject
+    public class PcrDocument : BaseObject
     {
         public Person Person { get; set; }
         public int? PersonId { get; set; }

@@ -1,202 +1,180 @@
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Персоны</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Заявки</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Справки</a>
-        </li>
-      </ul>
-      <br />
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <div class="row ">
+  
+      <div class="row ">
 
-            <div class="col-9">
-              <div class="card">
-                <div class="card-header text-left">
-                  Список
+        <div class="col-9">
+          <div class="card">
+            <div class="card-header text-left">
+              Список
+            </div>
+            <div class="card-body">
+
+              <div class="row">
+                <div class="col-2">
+                  <button type="button" (click)="AddPerson()" class="btn btn-block btn-secondary">Добавить</button>
                 </div>
-                <div class="card-body">
-
-                  <div class="row">
-                    <div class="col-2">
-                      <button type="button" (click)="AddPerson()" class="btn btn-block btn-secondary">Добавить</button>
-                    </div>
-                    <div class="col-2">
-                      <button type="button" (click)="EditPerson()" class="btn btn-block btn-secondary">Изменить</button>
-                    </div>
-                    <div class="col-2">
-                      <button type="button" (click)="DeletePerson()" class="btn btn-block btn-secondary">Удалить</button>
-                    </div>
-                    <div class="col-6">
-                      <input autocomplete="off" class="form-control" placeholder="Поиск" name="search" type="text">
-                    </div>
-                  </div>
-
-                  <div style="height:600px;overflow:auto;">
-                    <table class="table table-striped table-hover tableFixHead">
-                      <thead>
-                        <tr>
-                          <th scope="col"><input autocomplete="off" type="checkbox" (change)="selectAll()" [checked]="selectedAll"></th>
-                          <th scope="col">#</th>
-                          <th scope="col">ФИО</th>
-                          <th scope="col">Компания</th>
-                          <th scope="col">Роль</th>
-                          <th scope="col">Зона</th>
-                          <th scope="col">Email</th>
-                          <th scope="col">Телефон</th>
-                          <th scope="col">Декларация</th>
-                          <th scope="col">ПЦР</th>
-                          <th scope="col">Статус</th>
-                          <th scope="col">Причина статуса</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let person of persons; index as i">
-                          <td><input autocomplete="off" type="checkbox" [(ngModel)]="person.selected" [checked]="person.selected"></td>
-                          <th scope="row">{{ i + 1 }}</th>
-                          <td>{{ person.FullName }}</td>
-                          <td>{{ person.Company }}</td>
-                          <td>{{ person.Position }}</td>
-                          <td>{{ person.Zone }}</td>
-                          <td>{{ person.Email }}</td>
-                          <td>{{ person.Phone }}</td>
-                          <td>{{ person.HasDeclaration }}</td>
-                          <td>{{ person.HasPcr }}</td>
-                          <td>{{ person.Status }}</td>
-                          <td>{{ person.BlockReason }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                <div class="col-2">
+                  <button type="button" (click)="EditPerson()" class="btn btn-block btn-secondary">Изменить</button>
+                </div>
+                <div class="col-2">
+                  <button type="button" (click)="DeletePerson()" class="btn btn-block btn-secondary">Удалить</button>
+                </div>
+                <div class="col-6">
+                  <input autocomplete="off" class="form-control" placeholder="Поиск" name="search" type="text">
                 </div>
               </div>
-            </div>
 
-            <div class="col-3">
-              <div class="card">
-                <div class="card-header text-left">
-                  Карточка сотрудника
-                </div>
-                <div class="card-body">
-                  <form [formGroup]="personForm">
-                    <fieldset>
-                      <!--<div style="border:1px dashed gray; height:150px;" class="text-center">
-                        ФОТО
-                      </div>-->
-
-                      <div style="max-height:200px;" id="dragzone">
-                        <input autocomplete="off" type="file" accept="image/*"
-                               required id="profilePhoto" draggable="true"
-                               (change)="fileChangeEvent($event)"
-                               formControlName="profilePhoto"
-                               />
-                        <image-cropper [imageChangedEvent]="imageChangedEvent"
-                                       [maintainAspectRatio]="true"
-                                       [aspectRatio]="1 / 1"
-                                       format="png"
-                                       (imageCropped)="imageCropped($event)"
-                                       (imageLoaded)="imageLoaded()"
-                                       (cropperReady)="cropperReady()"
-                                       (loadImageFailed)="loadImageFailed()"></image-cropper>
-                      </div>
-                      <div style="height:160px;" *ngIf="croppedImage">
-                        <img [src]="croppedImage" width="150"/>
-                      </div>
-                      <br />
-                      <div class="form-group">
-                        <input autocomplete="off" class="form-control" placeholder="ФИО" name="fullname" type="text" formControlName="fullname" required>
-                      </div>
-                      <div class="form-group">
-                        <input autocomplete="off" class="form-control" placeholder="Организация" name="company" type="text" formControlName="company" required>
-                      </div>
-                      <div class="form-group">
-                        <select class="form-control" placeholder="Роль" name="position" formControlName="position" required>
-                          <option *ngFor="let item of positions" [value]="item">{{item}}</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <select class="form-control" placeholder="Зона" name="zone" formControlName="zone" required>
-                          <option *ngFor="let item of zones" [value]="item">{{item}}</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <input autocomplete="off" class="form-control" placeholder="Email" name="email" type="text" formControlName="email">
-                      </div>
-                      <div class="form-group">
-                        <input autocomplete="off" class="form-control" placeholder="Телефон" name="phone" type="text" formControlName="phone">
-                      </div>
-                      <div class="form-group">
-                        <div class="form-check">
-                          <label class="form-check-label">
-                            <input autocomplete="off" class="form-check-input" type="checkbox" name="hasdeclaration" formControlName="hasdeclaration">
-                            Наличие справки по форме РФС
-                          </label>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <div class="form-check">
-                          <label class="form-check-label">
-                            <input autocomplete="off" class="form-check-input" type="checkbox" name="haspcr" formControlName="haspcr">
-                            Наличие анализа Пцр
-                          </label>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <select class="form-control" name="status" formControlName="status" required>
-                          <option *ngFor="let item of statuses" [value]="item">{{item}}</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <select class="form-control" placeholder="Причина статуса" name="blockreason" formControlName="blockreason">
-                          <option value=""></option>
-                          <option *ngFor="let item of blockreasons" [value]="item">{{item}}</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <div class="form-check">
-                          <label class="form-check-label">
-                            <input autocomplete="off" class="form-check-input" type="checkbox" name="deleted" formControlName="deleted">
-                            Запись удалена
-                          </label>
-                        </div>
-                      </div>
-                      <input autocomplete="off" class="btn btn-lg btn-success btn-block" type="button" value="Сохранить" (click)="SavePerson()" [disabled]="personForm.status == 'invalid'">
-
-                      <br />
-                      <div class="alert alert-danger" *ngIf="errors.length > 0">
-                        <ul>
-                          <li *ngFor="let item of errors; let i = index" [attr.data-index]="i">
-                            - {{item}}
-                          </li>
-                        </ul>
-                      </div>
-                      <div class="alert alert-danger" *ngIf="personForm.errors">
-                        <ul>
-                          <li *ngFor="let item of personForm.errors; let i = index" [attr.data-index]="i">
-                            - {{item}}
-                          </li>
-                        </ul>
-                      </div>
-                    </fieldset>
-                  </form>
-                </div>
+              <div style="height:600px;overflow:auto;">
+                <table class="table table-striped table-hover tableFixHead">
+                  <thead>
+                    <tr>
+                      <th scope="col"><input autocomplete="off" type="checkbox" (change)="selectAll()" [checked]="selectedAll"></th>
+                      <th scope="col">#</th>
+                      <th scope="col">ФИО</th>
+                      <th scope="col">Компания</th>
+                      <th scope="col">Роль</th>
+                      <th scope="col">Зона</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Телефон</th>
+                      <th scope="col">Декларация</th>
+                      <th scope="col">ПЦР</th>
+                      <th scope="col">Статус</th>
+                      <th scope="col">Причина статуса</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let person of persons; index as i">
+                      <td><input autocomplete="off" type="checkbox" [(ngModel)]="person.selected" [checked]="person.selected"></td>
+                      <th scope="row">{{ i + 1 }}</th>
+                      <td>{{ person.FullName }}</td>
+                      <td>{{ person.Company }}</td>
+                      <td>{{ person.Position }}</td>
+                      <td>{{ person.Zone }}</td>
+                      <td>{{ person.Email }}</td>
+                      <td>{{ person.Phone }}</td>
+                      <td>{{ person.HasDeclaration }}</td>
+                      <td>{{ person.HasPcr }}</td>
+                      <td>{{ person.Status }}</td>
+                      <td>{{ person.BlockReason }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-
           </div>
         </div>
 
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+        <div class="col-3">
+          <div class="card">
+            <div class="card-header text-left">
+              Карточка сотрудника
+            </div>
+            <div class="card-body">
+              <form [formGroup]="personForm">
+                <fieldset>
+                  <!--<div style="border:1px dashed gray; height:150px;" class="text-center">
+                ФОТО
+              </div>-->
+
+                  <div style="max-height:200px;" id="dragzone">
+                    <input autocomplete="off" type="file" accept="image/*"
+                           required id="profilePhoto" draggable="true"
+                           (change)="fileChangeEvent($event)"
+                           formControlName="profilePhoto" />
+                    <image-cropper [imageChangedEvent]="imageChangedEvent"
+                                   [maintainAspectRatio]="true"
+                                   [aspectRatio]="1 / 1"
+                                   format="png"
+                                   (imageCropped)="imageCropped($event)"
+                                   (imageLoaded)="imageLoaded()"
+                                   (cropperReady)="cropperReady()"
+                                   (loadImageFailed)="loadImageFailed()"></image-cropper>
+                  </div>
+                  <div style="height:160px;" *ngIf="croppedImage">
+                    <img [src]="croppedImage" width="150" />
+                  </div>
+                  <br />
+                  <div class="form-group">
+                    <input autocomplete="off" class="form-control" placeholder="ФИО" name="fullname" type="text" formControlName="fullname" required>
+                  </div>
+                  <div class="form-group">
+                    <input autocomplete="off" class="form-control" placeholder="Организация" name="company" type="text" formControlName="company" required>
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" placeholder="Роль" name="position" formControlName="position" required>
+                      <option *ngFor="let item of positions" [value]="item">{{item}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" placeholder="Зона" name="zone" formControlName="zone" required>
+                      <option *ngFor="let item of zones" [value]="item">{{item}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <input autocomplete="off" class="form-control" placeholder="Email" name="email" type="text" formControlName="email">
+                  </div>
+                  <div class="form-group">
+                    <input autocomplete="off" class="form-control" placeholder="Телефон" name="phone" type="text" formControlName="phone">
+                  </div>
+                  <div class="form-group">
+                    <div class="form-check">
+                      <label class="form-check-label">
+                        <input autocomplete="off" class="form-check-input" type="checkbox" name="hasdeclaration" formControlName="hasdeclaration">
+                        Наличие справки по форме РФС
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-check">
+                      <label class="form-check-label">
+                        <input autocomplete="off" class="form-check-input" type="checkbox" name="haspcr" formControlName="haspcr">
+                        Наличие анализа Пцр
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" name="status" formControlName="status" required>
+                      <option *ngFor="let item of statuses" [value]="item">{{item}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" placeholder="Причина статуса" name="blockreason" formControlName="blockreason">
+                      <option value=""></option>
+                      <option *ngFor="let item of blockreasons" [value]="item">{{item}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-check">
+                      <label class="form-check-label">
+                        <input autocomplete="off" class="form-check-input" type="checkbox" name="deleted" formControlName="deleted">
+                        Запись удалена
+                      </label>
+                    </div>
+                  </div>
+                  <input autocomplete="off" class="btn btn-lg btn-success btn-block" type="button" value="Сохранить" (click)="SavePerson()" [disabled]="personForm.status == 'invalid'">
+
+                  <br />
+                  <div class="alert alert-danger" *ngIf="errors.length > 0">
+                    <ul>
+                      <li *ngFor="let item of errors; let i = index" [attr.data-index]="i">
+                        - {{item}}
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="alert alert-danger" *ngIf="personForm.errors">
+                    <ul>
+                      <li *ngFor="let item of personForm.errors; let i = index" [attr.data-index]="i">
+                        - {{item}}
+                      </li>
+                    </ul>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+
       </div>
-    </div>
-  </div>
+      
 </div>
 

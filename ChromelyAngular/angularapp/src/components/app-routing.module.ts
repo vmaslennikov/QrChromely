@@ -6,9 +6,13 @@ export const routes: Routes = [
   {
       path: '',
       children: [
-        { path: 'home', loadChildren: './home/home.module#HomeModule'},
+        { path: 'home', loadChildren: './home/home.module#HomeModule' },
+
         { path: 'login', loadChildren: './login/login.module#LoginModule'},
         { path: 'persons', loadChildren: './persons/persons.module#PersonsModule' },
+        { path: 'requests', loadChildren: './requests/requests.module#RequestsModule' },
+        { path: 'documents', loadChildren: './documents/documents.module#DocumentsModule' },
+
         { path: 'tmdb', loadChildren: './tmdb/tmdb.module#TmdbModule'},
         { path: 'todolist', loadChildren: './todolist/todolist.module#TodoListModule'},
         { path: 'messagerouter', loadChildren: './messagerouter/messagerouter.module#MessageRouterModule'},
