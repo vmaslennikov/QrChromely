@@ -92,7 +92,7 @@ namespace ChromelyAngular.Controllers
                 person.BlockReason = personInfo?.blockreason;
                 person.Zone = personInfo?.zone;
                 person.Deleted = personInfo?.deleted ?? false;
-
+                person.Photo = personInfo?.photo;
                 db.SaveChanges();
 
                 return new ChromelyResponse()

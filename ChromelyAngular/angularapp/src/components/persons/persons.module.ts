@@ -4,8 +4,8 @@ import { PersonsComponent } from './persons.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-
-
+import { ImageCropperModule } from 'ngx-image-cropper';
+import { NgxFileDropModule } from 'ngx-file-drop';
 
 @NgModule({
   declarations: [PersonsComponent],
@@ -13,7 +13,9 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     PersonsRouting,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ImageCropperModule,
+    NgxFileDropModule
   ]
 })
 export class PersonsModule { }

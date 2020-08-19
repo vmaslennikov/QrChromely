@@ -23,6 +23,7 @@ namespace ChromelyAngular.Backend.Dto
         public string status { get; set; }
         public string blockreason { get; set; }
         public string zone { get; set; }
+        public string photo { get; set; }
         public bool deleted { get; set; }
     }
 

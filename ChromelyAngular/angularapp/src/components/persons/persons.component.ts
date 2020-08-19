@@ -2,12 +2,13 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChromelyService } from '../../services/chromely.service';
-import { config } from 'process';
+import { ImageCroppedEvent } from 'ngx-image-cropper';
+import { NgxFileDropEntry, FileSystemFileEntry } from 'ngx-file-drop';
 
 @Component({
   selector: 'app-persons',
   templateUrl: './persons.component.html',
-  styleUrls: ['./persons.component.css']
+  styleUrls: ['./persons.component.css'],
 })
 export class PersonsComponent implements OnInit {
 
@@ -22,6 +23,8 @@ export class PersonsComponent implements OnInit {
   personForm: FormGroup;
   selectedPerson: any;
   selectedAll = false;
+  personFromEnabled = false;
+
 
   constructor(
     private router: Router,
@@ -34,6 +37,7 @@ export class PersonsComponent implements OnInit {
     this.errors = [];
 
     this.personForm = new FormGroup({
+      profilePhoto: new FormControl(''),
       fullname: new FormControl('', [Validators.required]),
       company: new FormControl('', [Validators.required]),
       position: new FormControl('', [Validators.required]),
@@ -53,6 +57,25 @@ export class PersonsComponent implements OnInit {
     this.personForm.reset();
   }
 
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+
+  fileChangeEvent(event: any): void {
+    this.imageChangedEvent = event;
+  }
+  imageCropped(event: ImageCroppedEvent) {
+    this.croppedImage = event.base64;
+  }
+  imageLoaded() {
+    // show cropper
+  }
+  cropperReady() {
+    // cropper ready
+  }
+  loadImageFailed() {
+    // show message
+  }
+
   selectAll() {
     this.persons.forEach((o) => {
       o.selected = !this.selectedAll;
@@ -63,6 +86,10 @@ export class PersonsComponent implements OnInit {
   AddPerson() {
     this.personForm.reset();
     this.personForm.enable();
+    this.croppedImage = null;
+    this.selectedPerson = null;
+    this.personFromEnabled = true;
+    this.imageChangedEvent = '';
   }
   EditPerson() {
     var selected = [];
@@ -75,6 +102,10 @@ export class PersonsComponent implements OnInit {
       this.personForm.reset();
       this.personForm.enable();
       this.selectedPerson = selected[0];
+      if (this.selectedPerson.Photo) {
+        this.croppedImage = this.selectedPerson.Photo;
+      }
+      this.personForm.controls['profilePhoto'].setValue(null);
       this.personForm.controls['fullname'].setValue(this.selectedPerson.FullName);
       this.personForm.controls['company'].setValue(this.selectedPerson.Company);
       this.personForm.controls['position'].setValue(this.selectedPerson.Position);
@@ -85,6 +116,7 @@ export class PersonsComponent implements OnInit {
       this.personForm.controls['status'].setValue(this.selectedPerson.Status);
       this.personForm.controls['blockreason'].setValue(this.selectedPerson.BlockReason);
       this.personForm.controls['deleted'].setValue(this.selectedPerson.Deleted);
+      this.personFromEnabled = true;
     } else {
       alert('Необходимо выбрать только 1 запись для редактирования.')
     }
@@ -155,8 +187,21 @@ export class PersonsComponent implements OnInit {
 
   SavePerson() {
     this.errors = [];
+
+    if (!this.croppedImage) {
+      this.errors.push('Фото обязательно');
+    }
+    if (this.personForm.value.status !== "активна") {
+      this.errors.push('Выберите причину статуса');
+    }
+    if (this.errors.length > 0) {
+      return;
+    }
     var copy = Object.assign(
-      { id: this.selectedPerson ? this.selectedPerson.Id : null },
+      {
+        id: this.selectedPerson ? this.selectedPerson.Id : null,
+        photo: this.croppedImage
+      },
       this.personForm.value);
     copy.deleted = copy.deleted ? true : false;
     this._chromelyService.cefQueryPostRequest(
@@ -176,10 +221,63 @@ export class PersonsComponent implements OnInit {
             }
             this.personForm.disable();
             this.personForm.reset();
+            this.personFromEnabled = false;
           } else {
             this.errors = data.Errors;
           }
         });
       });
   }
+
+  //droppedImage: any = '';
+  //isFileSelected = false;
+
+  //readImageFile(file: any) {
+  //  const reader = new FileReader();
+  //  reader.onload = (e: any) => {
+  //    this.croppedImage = e.target.result;
+  //  };
+  //  reader.readAsDataURL(file);
+  //}
+
+  //allowDrop(event: any) {
+  //  event.preventDefault();
+  //}
+
+  ////drag and drop image select
+  //dropHandler(event: any) {
+  //  event.preventDefault();
+  //  if (!this.isFileSelected && event.dataTransfer.items.length > 0 &&
+  //    event.dataTransfer.items[0].kind === 'file' &&
+  //    event.dataTransfer.items[0].type.indexOf('image') > -1) {
+  //    this.isFileSelected = true;
+  //    this.readImageFile(event.dataTransfer.items[0].getAsFile());
+  //  } else {
+  //    return false;
+  //  }
+  //}
+
+  ////public dropped(event: any) {
+  ////  event.files[0].fileEntry.file(
+  ////    (ev) => {
+  ////      this.imageChangedEvent = { target: { files: [ev] } }
+  ////    },
+  ////    () => console.log('Failed to load image')
+  ////  );
+  ////}
+  //public dropped(files: NgxFileDropEntry[]) {
+  //  for (const droppedFile of files) {
+
+  //    // Is it a file?
+  //    if (droppedFile.fileEntry.isFile) {
+  //      const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+  //      fileEntry.file(
+  //        (ev) => {
+  //          this.imageChangedEvent = { target: { files: [ev] } }
+  //        }
+  //      );
+  //    }
+
+  //  }
+  //}
 }

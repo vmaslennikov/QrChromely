@@ -26,6 +26,8 @@ namespace ChromelyAngular.Backend.Models
         public string BlockReason { get; set; }
         public bool HasDeclaration { get; set; }
         public bool HasPcr { get; set; }
+        public string Photo { get; set; }
+
     }
 
     [Table("Documents")]
