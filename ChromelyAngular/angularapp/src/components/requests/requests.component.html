@@ -10,12 +10,12 @@
         <div class="card-body">
 
           <div class="row">
-            <!--<div class="col-2">
+            <div class="col-2">
               <button type="button" (click)="AddRequest()" class="btn btn-block btn-secondary">Добавить</button>
             </div>
             <div class="col-2">
-              <button type="button" (click)="EditRequest()" class="btn btn-block btn-secondary">Изменить</button>
-            </div>-->
+              <button type="button" (click)="EditRequest()" class="btn btn-block btn-secondary">Работа с заявкой</button>
+            </div>
             <div class="col-2">
               <button type="button" (click)="DeleteRequest()" class="btn btn-block btn-secondary">Удалить</button>
             </div>
@@ -70,6 +70,8 @@
                 </div>
               </div>
               <input autocomplete="off" class="btn btn-lg btn-success btn-block" type="button" value="Сохранить" (click)="SaveRequest()" [disabled]="requestForm.status == 'invalid'">
+              <input autocomplete="off" class="btn btn-lg btn-secondary btn-block" type="button" value="Скачать архив" (click)="Download()" [disabled]="selectedRequest == null">
+              <input autocomplete="off" class="btn btn-lg btn-secondary btn-block" type="button" value="Закачать на FTP" (click)="Upload()" [disabled]="selectedRequest == null">
 
               <br />
               <div class="alert alert-danger" *ngIf="errors.length > 0">

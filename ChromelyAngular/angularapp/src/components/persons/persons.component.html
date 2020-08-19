@@ -87,12 +87,12 @@
                 ФОТО
               </div>-->
 
-              <div style="max-height:200px;" id="dragzone">
+              <div style="height:200px;" id="dragzone">
                 <input autocomplete="off" type="file" accept="image/*"
                        required id="profilePhoto" draggable="true"
                        (change)="fileChangeEvent($event)"
                        formControlName="profilePhoto" />
-                <image-cropper *ngIf="croppedImage"
+                <image-cropper 
                                [imageChangedEvent]="imageChangedEvent"
                                [maintainAspectRatio]="true"
                                [aspectRatio]="1 / 1"

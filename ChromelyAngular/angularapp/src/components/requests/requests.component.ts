@@ -35,7 +35,7 @@ export class RequestsComponent implements OnInit {
       event: new FormControl('', [Validators.required]),
       deleted: new FormControl(''),
     });
-    //this.GetDictionaries();
+    this.GetDictionaries();
     this.GetRequests();
 
     this.requestForm.disable();
@@ -164,4 +164,31 @@ export class RequestsComponent implements OnInit {
       });
   }
 
+  Download() {
+    if (this.selectedRequest) {
+      var url = "http://command.com//data/zip?id=" + this.selectedRequest.Id;
+      this._chromelyService.openExternalUrl(url);
+    }
+  }
+
+  Upload() {
+    if (this.selectedRequest) {
+      var datajson = { id: this.selectedRequest.Id };
+      this._chromelyService.cefQueryPostRequest(
+        '/requests/zip',
+        null,
+        datajson,
+        data => {
+          this._zone.run(() => {
+            //alert(JSON.stringify(data));
+            if (data && data.Status == "ok") {
+              // тут надо грид обновить
+              this.GetRequests();
+            } else {
+              this.errors = data.Errors;
+            }
+          });
+        });
+    }
+  }
 }

@@ -1,14 +1,14 @@
-﻿using Chromely.Core.Network;
+﻿using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+
+using Chromely.Core.Network;
 
 using ChromelyAngular.Backend.DB;
-using ChromelyAngular.Backend.Dto;
-using ChromelyAngular.Backend.Models;
 using ChromelyAngular.Backend.Utils;
 
-using System;
-using System.Data.Common;
-using System.Linq;
-using System.Text.Json;
+using OfficeOpenXml;
 
 namespace ChromelyAngular.Controllers
 {
@@ -17,13 +17,13 @@ namespace ChromelyAngular.Controllers
     {
         static dynamic DbDataSource = null;
 
-        [HttpGet(Route = "/data/ping")]
+        [Chromely.Core.Network.HttpGet(Route = "/data/ping")]
         public ChromelyResponse Ping(ChromelyRequest request)
         {
             return new ChromelyResponse() { RequestId = request.Id, Data = new { Result = "pong", Time = DateTime.UtcNow } };
         }
 
-        [HttpGet(Route = "/data/get")]
+        [Chromely.Core.Network.HttpGet(Route = "/data/get")]
         public ChromelyResponse Get(ChromelyRequest request)
         {
             try
@@ -70,5 +70,13 @@ namespace ChromelyAngular.Controllers
                 };
             }
         }
+
+      
+        //public FileResult Download()
+        //{
+        //    byte[] fileBytes = System.IO.File.ReadAllBytes(@"c:\folder\myfile.ext");
+        //    string fileName = "myfile.ext";
+        //    return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        //}
     }
 }

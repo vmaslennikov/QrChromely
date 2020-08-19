@@ -38,4 +38,9 @@ namespace ChromelyAngular.Backend.Dto
         public string eventName { get; set; }
         public Guid[] ids { get; set; }
     }
+
+    public class EntityIdDto
+    {
+        public Guid id { get; set; }
+    }
 }
