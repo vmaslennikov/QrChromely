@@ -4,6 +4,8 @@ using ChromelyAngular.Backend.DB;
 using ChromelyAngular.Backend.Dto;
 using ChromelyAngular.Backend.Models;
 
+using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Linq;
 using System.Text.Json;
@@ -31,7 +33,7 @@ namespace ChromelyAngular.Controllers
                     RequestId = request.Id,
                     Data = new
                     {
-                        Result = db.FileRequests.OrderBy(p => p.Id).ToList(),
+                        Result = db.FileRequests.Include(o => o.Event).OrderByDescending(p => p.Created).ToList(),
                         Time = DateTime.UtcNow,
                         Status = "ok",
                         ErrorMessage = Array.Empty<string>()
@@ -48,6 +50,79 @@ namespace ChromelyAngular.Controllers
                         Time = DateTime.UtcNow,
                         Status = "error",
                         ErrorMessage = new string[1] { ex.Message }
+                    }
+                };
+            }
+            finally
+            {
+                db?.Dispose();
+            }
+        }
+
+        [HttpPost(Route = "/requests/new")]
+        public ChromelyResponse New(ChromelyRequest request)
+        {
+            AppDbContext db = null;
+            try
+            {
+                var options = new JsonSerializerOptions { ReadCommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
+
+                var postDataJson = request.PostData.ToJson();
+                var personRequestInfo = JsonSerializer.Deserialize<PersonRequestDto>(postDataJson, options);
+
+                db = new AppDbContext();
+                var eventObj = db.Events.FirstOrDefault(o => o.ExternalId == personRequestInfo.eventId);
+                if (eventObj == null)
+                {
+                    eventObj = new ChromelyAngular.Backend.Models.Event();
+                    eventObj.ExternalId = personRequestInfo.eventId;
+                    eventObj.Name = personRequestInfo.eventName;
+                    eventObj.Deleted = false;
+                }
+                db.SaveChanges();
+
+                FileRequest requestObj = new FileRequest();
+                requestObj.Event = eventObj;
+                requestObj.Deleted = false;
+                db.FileRequests.Add(requestObj);
+                db.SaveChanges();
+
+                foreach (var personId in personRequestInfo.ids)
+                {
+                    var personRequestObj = new PersonRequest();
+                    personRequestObj.RequestId = requestObj.Id;
+                    personRequestObj.PersonId = personId;
+                    db.PersonRequests.Add(personRequestObj);
+                }
+                db.SaveChanges();
+
+                return new ChromelyResponse()
+                {
+                    RequestId = request.Id,
+                    Data = new
+                    {
+                        Result = new
+                        {
+                            Event = eventObj,
+                            FileRequest = requestObj,
+                            AddCount = personRequestInfo.ids.Length
+                        },
+                        Time = DateTime.UtcNow,
+                        Status = "ok",
+                        Errors = Array.Empty<string>()
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ChromelyResponse()
+                {
+                    RequestId = request.Id,
+                    Data = new
+                    {
+                        Time = DateTime.UtcNow,
+                        Status = "error",
+                        Errors = new string[1] { ex.Message }
                     }
                 };
             }
@@ -135,11 +210,11 @@ namespace ChromelyAngular.Controllers
                 var options = new JsonSerializerOptions { ReadCommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
 
                 var postDataJson = request.PostData.ToJson();
-                var personInfo = JsonSerializer.Deserialize<PersonDeleteDto>(postDataJson, options);
+                var objInfo = JsonSerializer.Deserialize<EntityDeleteDto>(postDataJson, options);
 
                 db = new AppDbContext();
-                var persons = personInfo.ids == null ? Array.Empty<Person>() : db.Persons.Where(p => personInfo.ids.Contains(p.Id)).ToArray();
-                foreach (var item in persons)
+                var requests = objInfo.ids == null ? Array.Empty<FileRequest>() : db.FileRequests.Where(p => objInfo.ids.Contains(p.Id)).ToArray();
+                foreach (var item in requests)
                 {
                     item.Deleted = true;
                 }

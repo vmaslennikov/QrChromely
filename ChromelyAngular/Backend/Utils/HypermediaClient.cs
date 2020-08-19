@@ -64,26 +64,33 @@ namespace ChromelyAngular.Backend.Utils
         /// <param name="take">The number of users to return.</param>
         /// <returns>The list of T.</returns>
         public Task<IReadOnlyList<Position>> GetPositionsAsync(int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
-            => GetAsync<Position>("positions", page, size, sort, cancellationToken);
+            => GetAsync<Position>("positions", page, size, sort, null, cancellationToken);
 
         public Task<IReadOnlyList<Area>> GetAreasAsync(int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
-            => GetAsync<Area>("areas", page, size, sort, cancellationToken);
+            => GetAsync<Area>("areas", page, size, sort, null, cancellationToken);
 
         public Task<IReadOnlyList<Place>> GetPlacesAsync(int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
-            => GetAsync<Place>("places", page, size, sort, cancellationToken);
+            => GetAsync<Place>("places", page, size, sort, null, cancellationToken);
 
         public Task<IReadOnlyList<BlockReason>> GetBlockReasonsAsync(int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
-            => GetAsync<BlockReason>("blockReasons", page, size, sort, cancellationToken);
+            => GetAsync<BlockReason>("blockReasons", page, size, sort, null, cancellationToken);
 
         public Task<IReadOnlyList<Tournament>> GetTournamentsAsync(int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
-            => GetAsync<Tournament>("tournaments", page, size, sort, cancellationToken);
+            => GetAsync<Tournament>("tournaments", page, size, sort, null, cancellationToken);
 
-        public async Task<IReadOnlyList<Models.JsonApi.Event>> GetEventsAsync(int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
-            => await GetAsync<Models.JsonApi.Event>("events", page, size, sort, cancellationToken).ConfigureAwait(false);
-
-        public async Task<IReadOnlyList<T>> GetAsync<T>(string source, int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
+        public Task<IReadOnlyList<Models.JsonApi.Event>> GetEventsAsync(int page = 1, int size = 10, string sort = "name", CancellationToken cancellationToken = default)
         {
-            var response = await _httpClient.GetAsync($"api/v1/{source}?sort={sort}&page[size]={size}&page[number]={page}", cancellationToken).ConfigureAwait(false);
+            var filter = $"filter[date]=ge:{DateTime.UtcNow}";
+            return GetAsync<Models.JsonApi.Event>("events", page, size, sort, filter, cancellationToken);
+        }
+
+
+        public async Task<IReadOnlyList<T>> GetAsync<T>(string source, int page = 1, int size = 10, string sort = "name", string filter = null, CancellationToken cancellationToken = default)
+        {
+            var url = string.IsNullOrEmpty(filter) ? 
+                $"api/v1/{source}?sort={sort}&page[size]={size}&page[number]={page}" : 
+                $"api/v1/{source}?sort={sort}&page[size]={size}&page[number]={page}&{filter}";
+            var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsJsonApiManyAsync<T>(_contractResolver, _cache).ConfigureAwait(false);
         }

@@ -12,9 +12,11 @@ namespace ChromelyAngular.Backend.DB
 {
     public class AppDbContext : DbContext
     {
+        public DbSet<Event> Events { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<FileRequest> FileRequests { get; set; }
         public DbSet<PcrDocument> Documents { get; set; }
+        public DbSet<PersonRequest> PersonRequests { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,7 +33,6 @@ namespace ChromelyAngular.Backend.DB
             var nullableDateTimeConverter = new ValueConverter<DateTime?, DateTime?>(
                 v => v.HasValue ? v.Value.ToUniversalTime() : v,
                 v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
-
 
             base.OnModelCreating(modelBuilder);
         }

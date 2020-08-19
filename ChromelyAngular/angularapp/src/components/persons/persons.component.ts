@@ -3,7 +3,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChromelyService } from '../../services/chromely.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
-import { NgxFileDropEntry, FileSystemFileEntry } from 'ngx-file-drop';
 
 @Component({
   selector: 'app-persons',
@@ -14,14 +13,17 @@ export class PersonsComponent implements OnInit {
 
   persons: any[];
 
+  events: any[];
   zones: any[];
   positions: any[];
   blockreasons: any[];
   statuses = ['активна', 'заблокирована'];
 
+  gridErrors: string[];
   errors: string[];
   personForm: FormGroup;
   selectedPerson: any;
+  selectedEvent: any;
   selectedAll = false;
   personFromEnabled = false;
 
@@ -83,6 +85,10 @@ export class PersonsComponent implements OnInit {
     this.selectedAll = !this.selectedAll;
   }
 
+  get allowNewRequest() {
+    return this.persons.filter((o) => o.selected).length == 0;
+  }
+
   AddPerson() {
     this.personForm.reset();
     this.personForm.enable();
@@ -142,7 +148,7 @@ export class PersonsComponent implements OnInit {
               // тут надо грид обновить
               this.GetPersons();
             } else {
-              this.errors = data.Errors;
+              this.gridErrors = data.Errors;
             }
           });
         });
@@ -161,6 +167,7 @@ export class PersonsComponent implements OnInit {
             this.zones = data.Result.Zones;
             this.positions = data.Result.Positions;
             this.blockreasons = data.Result.BlockReasons;
+            this.events = data.Result.Events;
           } else {
             this.errors = data.Errors;
           }
@@ -179,7 +186,7 @@ export class PersonsComponent implements OnInit {
           if (data && data.Status == "ok") {
             this.persons = data.Result;
           } else {
-            this.errors = data.Errors;
+            this.gridErrors = data.Errors;
           }
         });
       });
@@ -229,55 +236,33 @@ export class PersonsComponent implements OnInit {
       });
   }
 
-  //droppedImage: any = '';
-  //isFileSelected = false;
-
-  //readImageFile(file: any) {
-  //  const reader = new FileReader();
-  //  reader.onload = (e: any) => {
-  //    this.croppedImage = e.target.result;
-  //  };
-  //  reader.readAsDataURL(file);
-  //}
-
-  //allowDrop(event: any) {
-  //  event.preventDefault();
-  //}
-
-  ////drag and drop image select
-  //dropHandler(event: any) {
-  //  event.preventDefault();
-  //  if (!this.isFileSelected && event.dataTransfer.items.length > 0 &&
-  //    event.dataTransfer.items[0].kind === 'file' &&
-  //    event.dataTransfer.items[0].type.indexOf('image') > -1) {
-  //    this.isFileSelected = true;
-  //    this.readImageFile(event.dataTransfer.items[0].getAsFile());
-  //  } else {
-  //    return false;
-  //  }
-  //}
-
-  ////public dropped(event: any) {
-  ////  event.files[0].fileEntry.file(
-  ////    (ev) => {
-  ////      this.imageChangedEvent = { target: { files: [ev] } }
-  ////    },
-  ////    () => console.log('Failed to load image')
-  ////  );
-  ////}
-  //public dropped(files: NgxFileDropEntry[]) {
-  //  for (const droppedFile of files) {
-
-  //    // Is it a file?
-  //    if (droppedFile.fileEntry.isFile) {
-  //      const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
-  //      fileEntry.file(
-  //        (ev) => {
-  //          this.imageChangedEvent = { target: { files: [ev] } }
-  //        }
-  //      );
-  //    }
-
-  //  }
-  //}
+  NewRequest() {
+    if (this.selectedEvent) {
+      var ids = [];
+      this.persons.forEach((o) => {
+        if (o.selected) {
+          ids.push(o.Id);
+        }
+      });
+      if (ids.length > 0) {
+        var datajson = { eventId: this.selectedEvent.Id, eventName: this.selectedEvent.Name , ids: ids };
+        this._chromelyService.cefQueryPostRequest(
+          '/requests/new',
+          null,
+          datajson,
+          data => {
+            this._zone.run(() => {
+              //alert(JSON.stringify(data));
+              if (data && data.Status == "ok") {
+                // тут надо попап закрыть
+                // this.GetPersons();
+                // $('#eventModal').modal('hide');
+              } else {
+                this.gridErrors = data.Errors;
+              }
+            });
+          });
+      }
+    }
+  }
 }

@@ -15,7 +15,7 @@ namespace ChromelyAngular.Backend.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public int ExternalId { get; set; }
+        public string ExternalId { get; set; }
         public bool Deleted { get; set; }
         public DateTime? Created { get; set; }
         public DateTime? Modified { get; set; }
@@ -49,12 +49,23 @@ namespace ChromelyAngular.Backend.Models
     public class FileRequest : BaseObject
     {
         public Event Event { get; set; }
-        public int? EventId { get; set; }
+        public Guid? EventId { get; set; }
     }
 
     [Table("Events")]
     public class Event : BaseObject
     {
-        public DateTime Date { get; set; }
+        public string Name { get; set; }
     }
+
+    [Table("PersonRequest")]
+    public class PersonRequest
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+        public Guid RequestId { get; set; }
+        public Guid PersonId { get; set; }
+    }
+
 }

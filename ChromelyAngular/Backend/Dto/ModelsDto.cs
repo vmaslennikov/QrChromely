@@ -27,8 +27,15 @@ namespace ChromelyAngular.Backend.Dto
         public bool deleted { get; set; }
     }
 
-    public class PersonDeleteDto
+    public class EntityDeleteDto
     {
+        public Guid[] ids { get; set; }
+    }
+
+    public class PersonRequestDto
+    {
+        public string eventId { get; set; }
+        public string eventName { get; set; }
         public Guid[] ids { get; set; }
     }
 }

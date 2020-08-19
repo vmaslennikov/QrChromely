@@ -36,7 +36,7 @@ export class RequestsComponent implements OnInit {
       deleted: new FormControl(''),
     });
     //this.GetDictionaries();
-    //this.GetPersons();
+    this.GetRequests();
 
     this.requestForm.disable();
     this.requestForm.reset();
@@ -99,7 +99,6 @@ export class RequestsComponent implements OnInit {
         });
     }
   }
-
 
   GetDictionaries() {
     this._chromelyService.cefQueryGetRequest(

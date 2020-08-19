@@ -135,7 +135,7 @@ namespace ChromelyAngular.Controllers
                 var options = new JsonSerializerOptions { ReadCommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
 
                 var postDataJson = request.PostData.ToJson();
-                var personInfo = JsonSerializer.Deserialize<PersonDeleteDto>(postDataJson, options);
+                var personInfo = JsonSerializer.Deserialize<EntityDeleteDto>(postDataJson, options);
 
                 db = new AppDbContext();
                 var persons = personInfo.ids == null ? Array.Empty<Person>() : db.Persons.Where(p => personInfo.ids.Contains(p.Id)).ToArray();
